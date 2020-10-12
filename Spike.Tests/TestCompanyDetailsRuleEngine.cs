@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Spike.RuleEngine;
 using Spike.Tests.Builders;
+using Spike.Tests.Stubs;
 using System.Collections.Generic;
 
 namespace Spike.Tests
@@ -54,6 +55,21 @@ namespace Spike.Tests
             Assert.IsTrue(results.TotalIgnoredRules > 0);
         }
 
+        [TestMethod]
+        public void TestMockedService()
+        {
+            var companyToTest = new CompanyDetailsBuilder()
+                .Tesla()
+                .HealthyBusiness()
+                .Build();
+
+            var service = new CompanyRulesServiceStub();
+            service.MockCompanyDetails(companyToTest);
+
+            var outcome = service.GetCompanyDecision(companyToTest.Id, "CUST001");
+
+            Assert.IsTrue(outcome.Outcome == RuleEngine.Models.DecisionType.Refer);
+        }
 
     }
 }

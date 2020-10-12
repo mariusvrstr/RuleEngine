@@ -44,11 +44,16 @@
     <Compile Include="CompanyDetailsRulesEngine.cs" />
     <Compile Include="Contracts\IDataModel.cs" />
     <Compile Include="Contracts\IRule.cs" />
+    <Compile Include="Contracts\ICompanyRulesService.cs" />
     <Compile Include="Engine\Result.cs" />
     <Compile Include="Engine\RuleStatus.cs" />
+    <Compile Include="Models\ClientRiskConfiguration.cs" />
     <Compile Include="Models\CompanyDetails.cs" />
     <Compile Include="Engine\Rule.cs" />
     <Compile Include="Engine\RuleEngine.cs" />
+    <Compile Include="Models\DecisionOutcome.cs" />
+    <Compile Include="Models\DecisionType.cs" />
+    <Compile Include="Models\IndividualDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

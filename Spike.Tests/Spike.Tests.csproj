@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builders\CompanyDetailsBuilder.cs" />
+    <Compile Include="Stubs\CompanyRulesServiceStub.cs" />
     <Compile Include="TestCompanyDetailsRuleEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
