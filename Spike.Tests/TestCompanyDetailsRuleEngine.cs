@@ -9,8 +9,7 @@ namespace Spike.Tests
     [TestClass]
     public class TestCompanyDetailsRuleEngine
     {
-        public List<string> WhitelistRule = new List<string> {"#0001"};
-
+        public List<string> WhitelistRule = new List<string> {"#0001"};                       
 
         [TestMethod]
         public void TestMustHaveRules()
@@ -21,11 +20,10 @@ namespace Spike.Tests
                 .Build();
 
             var rulesEngine = new CompanyDetailsRulesEngine();
-            var results = rulesEngine.ApplyRules(companyToTest);
+            var results = rulesEngine.ApplyRules(companyToTest, true);
 
             Assert.IsTrue(results.TotalApplicableRules > 0);
         }
-
 
         [TestMethod]
         public void TestBusinessSuccess()
@@ -36,7 +34,7 @@ namespace Spike.Tests
                 .Build();
 
             var rulesEngine = new CompanyDetailsRulesEngine();
-            var results = rulesEngine.ApplyRules(companyToTest);
+            var results = rulesEngine.ApplyRules(companyToTest, true);
 
             Assert.IsTrue(results.PercentageSucceeded > 0);
         }
@@ -50,7 +48,7 @@ namespace Spike.Tests
                 .Build();
 
             var rulesEngine = new CompanyDetailsRulesEngine(WhitelistRule);
-            var results = rulesEngine.ApplyRules(companyToTest);
+            var results = rulesEngine.ApplyRules(companyToTest, true);
 
             Assert.IsTrue(results.TotalIgnoredRules > 0);
         }
@@ -63,10 +61,8 @@ namespace Spike.Tests
                 .HealthyBusiness()
                 .Build();
 
-            var service = new CompanyRulesServiceStub();
-            service.MockCompanyDetails(companyToTest);
-
-            var outcome = service.GetCompanyDecision(companyToTest.Id, "CUST001");
+            var service = new CompanyRulesServiceStub(companyToTest, null, null);
+            var outcome = service.GetCompanyDecision(companyToTest.Id, "CUST001", true);
 
             Assert.IsTrue(outcome.Outcome == RuleEngine.Models.DecisionType.Refer);
         }

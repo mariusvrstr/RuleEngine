@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="Builders\CompanyDetailsBuilder.cs" />
     <Compile Include="Stubs\CompanyRulesServiceStub.cs" />
+    <Compile Include="Stubs\TestProxy.cs" />
     <Compile Include="TestCompanyDetailsRuleEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

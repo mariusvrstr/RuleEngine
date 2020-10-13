@@ -1,62 +1,30 @@
 ﻿using Spike.RuleEngine;
-using Spike.RuleEngine.Contracts;
 using Spike.RuleEngine.Models;
+using Spike.RuleEngine.Service;
 using System;
 
 namespace Spike.Tests.Stubs
 {
 
-    public class CompanyRulesServiceStub : ICompanyRulesService
+    public class CompanyRulesServiceStub : CompanyDetailsRulesEngineServiceBase
     {
-        private CompanyDetails companyDetails { get; set; } = null;
-        private IndividualDetails individualDetails { get; set; } = null;
 
-        private ClientRiskConfiguration clientRiskConfiguration { get; set; } = null;
-
-        public CompanyRulesServiceStub()
+        public CompanyRulesServiceStub(CompanyDetails companyDetails, IndividualDetails individualDetails, ClientRiskConfiguration consiguration) 
+            : base(new TestProxy(companyDetails, individualDetails, consiguration))
         {
-        }
+        }       
 
-        public void MockCompanyDetails(CompanyDetails companyDetails)
+        public override DecisionOutcome GetCompanyDecision(Guid companyId, string clientCode, bool hasSubjectConsent)
         {
-            this.companyDetails = companyDetails;
-        }
-
-        public void MockIndividualDetails(IndividualDetails individualDetails)
-        {
-            this.individualDetails = individualDetails;
-        }
-
-        public CompanyDetails GetCompanyDetails(Guid id)
-        {
-            // Normally this will go to the MD
-            return companyDetails;
-        }
-
-        public ClientRiskConfiguration GetClientConfiguration(string clientCode)
-        {
-            // This will come from customer configuration settings
-            return clientRiskConfiguration;
-        }
-
-        public IndividualDetails GetIndividualDetails(Guid id)
-        {
-            // This will go to the a consumer credit bureau           
-
-            return individualDetails;
-        }
-
-        public DecisionOutcome GetCompanyDecision(Guid companyId, string clientCode)
-        {
-            var cDetails = GetCompanyDetails(companyId);
-            var clientConf = GetClientConfiguration(clientCode);   
+            var cDetails = this.GetCompanyDetails(companyId);
+            var clientConf = this.GetClientConfiguration(clientCode);
 
             // If consent yes
             // If sole prop or single director
             // var iDetails = GetIndividualDetails(companyId);
 
             var rulesEngine = new CompanyDetailsRulesEngine();
-            var results = rulesEngine.ApplyRules(cDetails);
+            var results = rulesEngine.ApplyRules(cDetails, hasSubjectConsent);
 
             // Check knockout
             // Check coverage

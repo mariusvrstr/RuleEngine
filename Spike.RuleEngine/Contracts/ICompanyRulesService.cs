@@ -12,6 +12,6 @@ namespace Spike.RuleEngine.Contracts
 
         ClientRiskConfiguration GetClientConfiguration(string clientCode);
 
-        DecisionOutcome GetCompanyDecision(Guid companyId, string clientCode);
+        DecisionOutcome GetCompanyDecision(Guid companyId, string clientCode, bool hasSubjectConsent);
     }
 }

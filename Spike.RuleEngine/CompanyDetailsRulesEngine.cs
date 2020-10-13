@@ -11,14 +11,28 @@ namespace Spike.RuleEngine
     {
         Undefined = 0,
         CheckBusinessIsInHealthyState = 1,
-        CheckCompanyInBusinessFor12Months = 2
+        CheckYoungCompanyInBusiness = 2
     }
+
            
-    public class CompanyDetailsRulesEngine : RuleEngine<CompanyDetails>
+    public class CompanyDetailsRulesEngine : RuleEngine<CompanyDetails, CompanyVariables>
     {
+        // Example of how variables could be set
+        public override void SetVariables(CompanyDetails details, ref CompanyVariables variables)
+        {
+            if (details.RegisteredDate != null)
+            {
+                var days = (DateTime.Now - details.RegisteredDate).TotalDays;
+
+                variables.IsYoungBusiness = (days < 365);
+            }          
+        }
+
+        #region Pool of Available Rules
+
         public CompanyDetailsRulesEngine(List<string> whitelistRules = null) : base(whitelistRules) { }
    
-                private Func<CompanyDetails, RuleStatus> CheckBusinessIsInHealthyState = delegate(CompanyDetails data)
+        private Func<CompanyDetails, CompanyVariables, RuleStatus> CheckBusinessIsInHealthyState = delegate(CompanyDetails data, CompanyVariables variables)
         {
             if (data == null)
             {
@@ -34,26 +48,30 @@ namespace Spike.RuleEngine
             return RuleStatus.Succeeded;
         };
 
-        private Func<CompanyDetails, RuleStatus> CheckCompanyInBusinessFor12Months = delegate (CompanyDetails data)
+        private Func<CompanyDetails, CompanyVariables, RuleStatus> CheckYoungCompanyInBusiness = delegate (CompanyDetails data, CompanyVariables variables)
         {
-            if (data?.RegisteredDate == null)
+            if (variables?.IsYoungBusiness == null || data?.Status == null)
             {
                 return RuleStatus.Skipped;
             }
 
-            if ((DateTime.Now.Year - data?.RegisteredDate.Year) < 12)
+            if (data.Status == BusinessStatus.InBusiness && variables.IsYoungBusiness.Value)
             {
                 return RuleStatus.Failed;
             }
 
             return RuleStatus.Succeeded;
-        };        
+        };
+
+
+        #endregion
 
 
         public override void InitializeRules()
         { 
             AddRule(CompanyDetailsRule.CheckBusinessIsInHealthyState, CheckBusinessIsInHealthyState);
-            AddRule(CompanyDetailsRule.CheckCompanyInBusinessFor12Months, CheckCompanyInBusinessFor12Months);
+            AddRule(CompanyDetailsRule.CheckYoungCompanyInBusiness, CheckYoungCompanyInBusiness, true);
         }
+
     }
 }

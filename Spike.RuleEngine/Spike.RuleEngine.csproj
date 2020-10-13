@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="CompanyDetailsRulesEngine.cs" />
     <Compile Include="Contracts\IDataModel.cs" />
+    <Compile Include="Contracts\IProxy.cs" />
     <Compile Include="Contracts\IRule.cs" />
     <Compile Include="Contracts\ICompanyRulesService.cs" />
     <Compile Include="Engine\Result.cs" />
@@ -51,10 +52,12 @@
     <Compile Include="Models\CompanyDetails.cs" />
     <Compile Include="Engine\Rule.cs" />
     <Compile Include="Engine\RuleEngine.cs" />
+    <Compile Include="Models\CompanyVariables.cs" />
     <Compile Include="Models\DecisionOutcome.cs" />
     <Compile Include="Models\DecisionType.cs" />
     <Compile Include="Models\IndividualDetails.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\CompanyDetailsRulesEngineServiceBase.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

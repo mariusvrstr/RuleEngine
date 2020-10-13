@@ -1,5 +1,6 @@
 ﻿using Spike.RuleEngine.Contracts;
 using Spike.RuleEngine.Engine;
+using Spike.RuleEngine.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,14 @@ using System.Linq;
 namespace Spike.Engine.RuleEngine
 {
 
-    public abstract class RuleEngine <T> 
+    public abstract class RuleEngine <T, Y> 
         where T : IDataModel
     {
 
         private List<string> _ruleWhitelist;
 
-        private List<Rule<T>> _rules;
-        public List<Rule<T>> Rules => _rules ?? (_rules  = new List<Rule<T>>());
+        private List<Rule<T, Y>> _rules;
+        public List<Rule<T, Y>> Rules => _rules ?? (_rules  = new List<Rule<T, Y>>());
 
         public abstract void InitializeRules();
 
@@ -25,9 +26,11 @@ namespace Spike.Engine.RuleEngine
             InitializeRules();
         }
 
-        public void AddRule(Enum rule, Func<T, RuleStatus> logic) // , Enum grouping
+        public abstract void SetVariables(T details, ref Y variables);
+
+        public void AddRule(Enum rule, Func<T, Y, RuleStatus> logic, bool requiresConsent = false) // , Enum grouping
         {
-            var newRule = new Rule<T>(rule, logic);
+            var newRule = new Rule<T, Y>(rule, logic, requiresConsent);
 
             if (_ruleWhitelist != null && !_ruleWhitelist.Contains(newRule?.Code))
             {
@@ -37,13 +40,25 @@ namespace Spike.Engine.RuleEngine
             Rules.Add(newRule);
         }
 
-        public Result ApplyRules(T Data)
+        public Result ApplyRules(T Data, bool hasSubjectConsent)
         {
+            var genericType = typeof(Y);
+            var variables = (Y)Activator.CreateInstance(genericType);
+
+            SetVariables(Data, ref variables);
+
+
             foreach (var rule in Rules.OrderBy(r => r.Grouping))
             {
                 if (!rule.Disabled)
                 {
-                    rule.Run(Data);
+                    if (rule.RequiresConsent && !hasSubjectConsent)
+                    {
+                        rule.Skip();
+                        continue;
+                    }
+
+                    rule.Run(Data, variables);
                 }              
             }
 
